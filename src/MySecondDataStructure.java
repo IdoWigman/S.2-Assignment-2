@@ -99,7 +99,15 @@ public class MySecondDataStructure {
 	}
 
 	public Product mostExpensive() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		Product max = null;
+		for (Product p : maxValues) {
+			if (p != null) {
+				if (max == null || p.price() + qualityBonus[p.quality()] > max.price() + qualityBonus[max.quality()]) {
+					max = p;
+				}
+			}
+		}
+		return max;
 	}
 
 }
