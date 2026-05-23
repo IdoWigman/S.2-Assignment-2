@@ -82,7 +82,16 @@ public class MySecondDataStructure {
 	}
 	
 	public double avgQuality() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		int sum = 0;
+		double mult = 0.0;
+		for (int i = 0; i < qualityNum.length; i++) {
+			sum += qualityNum[i];
+			mult += qualityNum[i] * i;
+		}
+		if (sum == 0) {
+			return -1;
+		}
+		return mult / sum;
 	}
 
 	public void raisePrice(int raise, int quality) {
