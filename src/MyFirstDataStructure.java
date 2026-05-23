@@ -11,6 +11,7 @@ public class MyFirstDataStructure<T> {
      * 	-	primitive variables
      */
 
+
 	/***
      * This function is the Init function.
 	 * @param N The maximum number of elements in the data structure at each time.
