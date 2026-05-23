@@ -8,17 +8,35 @@ public class MySecondDataStructure {
      * 	-	basic arrays
      * 	-	primitive variables
      */
-	
+	private MyLinkedList<Product> list;
+	private int[] qualityNum;
+	private int[] qualityBonus;
+	private Product[] maxValues;
 	/***
      * This function is the Init function.
 	 * @param N The maximum number of elements in the data structure at each time.
      */
 	public MySecondDataStructure(int N) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		this.list = new MyLinkedList<>();
+		this.qualityNum = new int[6];
+		this.qualityBonus = new int[6];
+		this.maxValues = new Product[6];
 	}
 	
 	public void insert(Product product) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		ListLink<Product> newLink = new ListLink<> (product.id(), product);
+		int quality = product.quality();
+		int price = product.price();
+		qualityNum[quality] ++;
+		product.setPrice(price - qualityBonus[quality]);
+		if (maxValues[quality] != null) {
+			if (product.price() > maxValues[quality].price()) {
+				maxValues[quality] = product;
+			}
+		}
+		else
+			maxValues[quality] = product;
+		list.insert(newLink);
 	}
 	
 	public void findAndRemove(int id) {
