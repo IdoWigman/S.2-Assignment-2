@@ -14,6 +14,7 @@ public class ListLink<T> extends Element<T> {
      */
 	private ListLink<T> next;
 	private ListLink<T> prev;
+	private T value;
 	
 	public ListLink(int key, T satelliteData) {
 		super(key, satelliteData);
