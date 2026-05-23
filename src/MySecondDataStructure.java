@@ -40,9 +40,30 @@ public class MySecondDataStructure {
 	}
 	
 	public void findAndRemove(int id) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		ListLink<Product> toRemove = list.search(id);
+		if (toRemove != null) {
+			list.delete(toRemove);
+			int removedQuality = toRemove.satelliteData().quality();
+			qualityNum[removedQuality] --;
+			if (maxValues[removedQuality] == toRemove.satelliteData()) {
+				maxValues[removedQuality] = findMax(removedQuality);
+			}
+		}
 	}
-	
+
+	private Product findMax(int quality) {
+		Product result = null;
+		ListLink<Product> head = list.head();
+		while (head != null) {
+			int headQuality = head.satelliteData().quality();
+			int headPrice = head.satelliteData().price();
+			if ((headQuality == quality) && (result == null || headPrice > result.price()))
+				result = head.satelliteData();
+			head = head.getNext();
+		}
+		return result;
+	}
+
 	public int medianQuality() {
 		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
 	}
