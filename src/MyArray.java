@@ -16,7 +16,11 @@ public class MyArray<T> {
      * Implement the following method.
      */
     public void reverse() {
-    	throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+        ArrayElement<T>[] res = new ArrayElement[this.size];
+    	for (int i = 0; i < this.size; i++) {
+            res[i] = this.array[this.size - i - 1];
+        }
+        this.array = res;
     }
 
     /***
