@@ -17,6 +17,9 @@ public class TreeNode<T> extends Element<T> {
 	private TreeNode<T> p;		//parent
 	private int height;
 
+	private TreeNode<T> prev = null;
+	private TreeNode<T> next = null;
+
 	public TreeNode(int key, T satelliteData) {
 		super(key, satelliteData);
 		this.left = null;
