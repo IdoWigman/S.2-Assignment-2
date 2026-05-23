@@ -95,7 +95,7 @@ public class MySecondDataStructure {
 	}
 
 	public void raisePrice(int raise, int quality) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		qualityBonus[quality] += raise;
 	}
 
 	public Product mostExpensive() {
