@@ -67,4 +67,20 @@ public class TreeNode<T> extends Element<T> {
 		this.height = height;
 	}
 
+	public TreeNode<T> getNext() {
+		return this.next;
+	}
+
+	public TreeNode<T> getPrev() {
+		return this.prev;
+	}
+
+	public void setNext(TreeNode<T> next) {
+		this.next = next;
+	}
+
+	public void setPrev(TreeNode<T> prev) {
+		this.prev = prev;
+	}
+
 }

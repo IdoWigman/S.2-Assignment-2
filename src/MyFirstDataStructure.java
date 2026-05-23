@@ -27,7 +27,22 @@ public class MyFirstDataStructure<T> {
 	}
 	
 	public void insert(Element<T> x) {
-		TreeNode<T> newX = (TreeNode<T>) x;
+		TreeNode<T> newX = new TreeNode<> (x);
+
+		// updates head, tail and maxNode
+		if (this.head == null) {
+			this.head = newX;
+			this.tail = newX;
+		} else {
+			this.tail.setNext(newX);
+			newX.setPrev(this.tail);
+			this.tail = newX;
+		}
+
+		if (this.maxNode == null || this.maxNode.key() < newX.key()) {
+			this.maxNode = newX;
+		}
+
 		TreeNode<T> y = null;			// the variable name "y" is consistent with lecture notes
 		TreeNode<T> w = this.root;		// the variable name "w" is consistent with lecture notes
 		while (w != null) {
@@ -90,62 +105,106 @@ public class MyFirstDataStructure<T> {
 			y = nextAncestor;
 		}
 	}
-	
+
 	public void findAndRemove(int k) {
 		TreeNode<T> nodeToDelete = search(k);
-		// the deleted node has two children
-		if (nodeToDelete.getLeft() != null & nodeToDelete.getRight() != null) {
-			TreeNode<T> successor = minValueNode(nodeToDelete.getRight());
-			nodeToDelete.setKey(successor.key()); nodeToDelete.setSatData(successor.satelliteData());
-			findAndRemove(successor.key());
-		}
 
-		// the deleted node has at most one child
-		else {
-			TreeNode<T> y = nodeToDelete.getParent();
-			boolean isLeftChild = (y != null && nodeToDelete == y.getLeft());
-			boolean isRightChild = (y != null && nodeToDelete == y.getRight());
+		if (nodeToDelete != null) {
 
-			// the deleted node has only right child
-			if (nodeToDelete.getRight() != null) {
-				nodeToDelete.getRight().setParent(y);
-				if (isLeftChild) {
-					y.setLeft(nodeToDelete.getRight());
-				}
-				else if (isRightChild)
-					y.setRight(nodeToDelete.getRight());
-				else
-					root = nodeToDelete.getRight();
+			// DLL REMOVAL
+			if (nodeToDelete.getPrev() != null) {
+				nodeToDelete.getPrev().setNext(nodeToDelete.getNext());
+			} else {
+				this.head = nodeToDelete.getNext();
 			}
 
-			// the deleted node is a leaf or has only left child
+			if (nodeToDelete.getNext() != null) {
+				nodeToDelete.getNext().setPrev(nodeToDelete.getPrev());
+			} else {
+				this.tail = nodeToDelete.getPrev();
+			}
+
+			TreeNode<T> y = null;
+
+			// THE 2-CHILD CASE
+			if (nodeToDelete.getLeft() != null && nodeToDelete.getRight() != null) {
+				TreeNode<T> successor = minValueNode(nodeToDelete.getRight());
+				TreeNode<T> successorParent = successor.getParent();
+
+				TreeNode<T> successorChild = successor.getRight();
+				if (successorParent.getLeft() == successor) {
+					successorParent.setLeft(successorChild);
+				} else {
+					successorParent.setRight(successorChild);
+				}
+				if (successorChild != null) {
+					successorChild.setParent(successorParent);
+				}
+
+				successor.setParent(nodeToDelete.getParent());
+				if (nodeToDelete.getParent() == null) {
+					this.root = successor;
+				} else if (nodeToDelete.getParent().getLeft() == nodeToDelete) {
+					nodeToDelete.getParent().setLeft(successor);
+				} else {
+					nodeToDelete.getParent().setRight(successor);
+				}
+
+				successor.setLeft(nodeToDelete.getLeft());
+				if (successor.getLeft() != null) successor.getLeft().setParent(successor);
+
+				successor.setRight(nodeToDelete.getRight());
+				if (successor.getRight() != null) successor.getRight().setParent(successor);
+
+				successor.setHeight(nodeToDelete.getHeight());
+
+				if (successorParent == nodeToDelete) {
+					y = successor;
+				} else {
+					y = successorParent;
+				}
+			}
+
+			// THE 0/1 CHILD CASE
 			else {
-				if (nodeToDelete.getLeft() != null)
-					nodeToDelete.getLeft().setParent(y);
-				if (isLeftChild) {
-					y.setLeft(nodeToDelete.getLeft());
+				y = nodeToDelete.getParent();
+				boolean isLeftChild = (y != null && nodeToDelete == y.getLeft());
+				boolean isRightChild = (y != null && nodeToDelete == y.getRight());
+
+				// the deleted node has only right child
+				if (nodeToDelete.getRight() != null) {
+					nodeToDelete.getRight().setParent(y);
+					if (isLeftChild) {
+						y.setLeft(nodeToDelete.getRight());
+					}
+					else if (isRightChild) {
+						y.setRight(nodeToDelete.getRight());
+					}
+					else {
+						root = nodeToDelete.getRight();
+					}
 				}
-				else if (isRightChild)
-					y.setRight(nodeToDelete.getLeft());
-				else
-					root = nodeToDelete.getLeft();
+				// the deleted node is a leaf or has only left child
+				else {
+					if (nodeToDelete.getLeft() != null) {
+						nodeToDelete.getLeft().setParent(y);
+					}
+					if (isLeftChild) {
+						y.setLeft(nodeToDelete.getLeft());
+					}
+					else if (isRightChild) {
+						y.setRight(nodeToDelete.getLeft());
+					}
+					else {
+						root = nodeToDelete.getLeft();
+					}
+				}
 			}
 
-			/*
-			 * going up the tree from the deleted node until one of the following:
-			 * - the root
-			 * - the first node its height did not change due to the insertion
-			 * update the heights of the ancestors of the inserted leaf,
-			 * check if any ancestor became unbalanced and balance it
-			 */
-			boolean foundUnChangedHeight = false;
-			while(y != null & !foundUnChangedHeight) {
+			while(y != null) {
 				TreeNode<T> nextAncestor = y.getParent();
 
-				int heightBeforeInsertion = y.getHeight();
 				y.setHeight(1 + Math.max(height(y.getLeft()), height(y.getRight())));
-				foundUnChangedHeight = (heightBeforeInsertion == y.getHeight());
-
 				int balance = getBalance(y);
 
 				//case left-left
@@ -169,6 +228,12 @@ public class MyFirstDataStructure<T> {
 
 				y = nextAncestor;
 			}
+
+			// updates maxNode
+			if (this.maxNode == nodeToDelete) {
+				this.maxNode = maxValueNode(this.root);
+			}
+
 		}
 	}
 
@@ -262,16 +327,25 @@ public class MyFirstDataStructure<T> {
 		// Traverse right subtree if the key of the current node is less than the search node's key
 		return searchRecursive(root.getRight(), k);
 	}
+
+	private TreeNode<T> maxValueNode(TreeNode<T> root){
+		TreeNode<T> curr = root;
+		while (curr.getRight() != null) {
+			curr = curr.getRight();
+		}
+		return curr;
+	}
+
 	public Element<T> maximum() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		return this.maxNode;
 	}
 
 	public Element<T> first() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		return this.head;
 	}
 
 	public Element<T> last() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		return this.tail;
 	}
 
 }
