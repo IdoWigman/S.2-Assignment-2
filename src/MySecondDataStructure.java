@@ -65,7 +65,20 @@ public class MySecondDataStructure {
 	}
 
 	public int medianQuality() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		int sum = 0;
+        for (int j : qualityNum) {
+            sum += j;
+        }
+		if (sum == 0) {
+			return -1;
+		}
+		int target = qualityNum[0];
+		int medianQuality = 0;
+		while (target < (sum+1) / 2) {
+			medianQuality++;
+			target += qualityNum[medianQuality];
+		}
+		return medianQuality;
 	}
 	
 	public double avgQuality() {
